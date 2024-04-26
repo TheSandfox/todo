@@ -15,6 +15,13 @@ function secondsFormat(val) {
 	return val;
 }
 
+function getDateString(date) {
+	return `
+		${date.getFullYear()}-${date.getMonth()}-${date.getDate()} 
+		${DAYS[date.getDay()]} ${date.getHours()}:${date.getMinutes()}:${secondsFormat(date.getSeconds())}
+	`
+}
+
 function useInterval(callback,timeout) {
 	useEffect(()=>{
 		const timer = setInterval(callback,timeout);
@@ -24,14 +31,11 @@ function useInterval(callback,timeout) {
 }
 
 export default function DateWidget(){
-	const [now,setNow] = useState(new Date());
+	const [now,setNow] = useState(getDateString(new Date()));
 	const handleNow = {
 		refresh:()=>{
 			let date = new Date();
-			setNow(`
-				${date.getFullYear()}-${date.getMonth()}-${date.getDate()} 
-				${DAYS[date.getDay()]} ${date.getHours()}:${date.getMinutes()}:${secondsFormat(date.getSeconds())}
-			`)
+			setNow(getDateString(date))
 		}
 	}
 	useInterval(()=>{

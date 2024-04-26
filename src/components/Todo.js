@@ -2,7 +2,11 @@ import { useRef, useState, Fragment } from "react";
 import TodoWidget from "./TodoWidget";
 import DateWidget from "./DateWidget";
 
+import { FaPlus } from "react-icons/fa";
+import { FaRegPlusSquare } from "react-icons/fa";
+
 function AddTodoInput({handleTodoList}) {
+	const [expand,setExpand] = useState(false);
 	const inputElement = useRef(null);
 	const inputValueDefault = {
 		title:'',
@@ -12,6 +16,7 @@ function AddTodoInput({handleTodoList}) {
 		...inputValueDefault
 	});
 
+	//인풋핸들러
 	const handleInputValue = {
 		modify:(e)=>{
 			setInputValue({
@@ -38,65 +43,72 @@ function AddTodoInput({handleTodoList}) {
 			})
 		}
 	}
+	//익스팬드 핸들러
+	const handleExpand = {
+		toggle:()=>{
+			setExpand(!expand);
+		}
+	}
+	//리스트 추가 요청
 	const submit = ()=>{
 		handleInputValue.addRequest();
 		handleInputValue.clear();
 	}
+	//버튼클릭콜백
 	const buttonClickCallback = ()=>{
 		submit();
 		inputElement.current.focus();
 	}
+	//엔터콜백
 	const enterCallback = (e)=>{
 		if(e.keyCode!==13){return;}
 		submit();
 	}
-	return <div style={{
-		display:'flex',
-		alignItems:'center',
-		gap:'16px'
-	}}>
-		<input 
-			ref={inputElement}
-			type='text' 
-			name='title' 
-			value={inputValue['title']} 
-			onChange={handleInputValue.modify} 
-			onKeyDown={enterCallback} 
-			style={{
-				width:'480px',
-				height:'32px',
-				fontSize:'24px'
-			}}
-			placeholder="새로운 Todo..."
-		/>
-		{/* <div>시간:</div>
-		<input type='text' name='time' onChange={handleInputValue.modify} onKeyDown={enterCallback}/> */}
-		<button onClick={buttonClickCallback} style={{
-			height:'100%',
-			background:`url(${process.env.PUBLIC_URL+'/img/001.png'})`,
-		}}>
-			추가하깅
+	//리턴 JSX
+	return <div className="addTodoList">
+		<button className={`expandButton dotbox ${expand?'expanded':''}`} onClick={handleExpand.toggle}>
+			<div className="plus">
+				<FaPlus/>
+			</div>
 		</button>
-		{/* <img src={process.env.PUBLIC_URL+'/img/001.png'}></img> */}
+		<div className={`expandContainerWrapper dotbox ${expand?'active':''}`}>
+		<div className={`expandContainer ${expand?'active':''}`}>
+			<div className={`inputContainer`}>
+				<input 
+					ref={inputElement}
+					type='text' 
+					name='title' 
+					value={inputValue['title']} 
+					onChange={handleInputValue.modify} 
+					onKeyDown={enterCallback} 
+					placeholder="할 일 입력..."
+				/>
+				<button onClick={buttonClickCallback}>
+					<div className="plus">
+						<FaRegPlusSquare className=''/>
+					</div>
+				</button>
+			</div>
+		</div>
+		</div>
 	</div>
 }
 
 export default function Todo() {
-	const todoIncrement = useRef(0);
-	const todoListDefault = [];
-	const [todoList,setTodoList] = useState([...todoListDefault]);
+	const todoListLocal = [];
+	const [todoList,setTodoList] = useState([...todoListLocal]);
+	const todoListIncrement = useRef(todoListLocal.length);
 	const selectedTodoListDefault = [];
 	const [selectedTodoList,setSelectedTodoList] = useState([...selectedTodoListDefault]);
-	const [displayAddInput,setDisplayAddInput] = useState(false);
 
 	const handleTodoList = {
 		add:(newObj)=>{
-			newObj.id =  todoIncrement.current;
+			newObj.id =  todoListIncrement.current;
 			setTodoList([
 				...todoList,
 				newObj
 			]);
-			todoIncrement.current += 1;
+			todoListIncrement.current += 1;
 		},
 		remove:(id)=>{
 			setTodoList(
@@ -124,7 +136,7 @@ export default function Todo() {
 				if(window.confirm('진짜로?','dd')){
 					setTodoList([]);
 					setSelectedTodoList([]);
-					todoIncrement.current = 0;
+					todoListIncrement.current = 0;
 				}
 			}
 		}
@@ -161,18 +173,6 @@ export default function Todo() {
 		}
 	}
 
-	const handleDisplayAddInput = {
-		show:()=>{
-			setDisplayAddInput(true);
-		},
-		hide:()=>{
-			setDisplayAddInput(false);
-		},
-		toggle:()=>{
-			setDisplayAddInput(()=>{return !displayAddInput});
-		}
-	}
-
 	return <div className="todo" style={{
 		width:'960px',
 		margin:'0 auto'
@@ -183,15 +183,7 @@ export default function Todo() {
 			gap:'32px',
 			alignItems:'center'
 		}}>
-			<button onClick={handleDisplayAddInput.toggle} style={{
-				width:'40px',
-				height:'40px'
-			}}>
-				{displayAddInput?'x':'+'}
-			</button>
-			{displayAddInput?
-				<AddTodoInput handleTodoList={handleTodoList} handleDisplayAddInput={handleDisplayAddInput}/>
-			:null}
+			<AddTodoInput handleTodoList={handleTodoList}/>
 		</div>
 		<h3>Todo List <button onClick={handleTodoList.truncate}>다지우깅</button></h3>
 		{todoList.map((todo,index)=>
