@@ -1,9 +1,10 @@
-import { useRef, useState, Fragment } from "react";
+import { useRef, useState, Fragment, useReducer } from "react";
 import TodoWidget from "./TodoWidget";
 import DateWidget from "./DateWidget";
 
 import { FaPlus } from "react-icons/fa";
 import { FaRegPlusSquare } from "react-icons/fa";
+import { todoListDefault, todoListReducer } from "./TodoData";
 
 function AddTodoInput({handleTodoList}) {
 	const [expand,setExpand] = useState(false);
@@ -95,50 +96,52 @@ function AddTodoInput({handleTodoList}) {
 }
 
 export default function Todo() {
-	const todoListLocal = [];
-	const [todoList,setTodoList] = useState([...todoListLocal]);
-	const todoListIncrement = useRef(todoListLocal.length);
+	const [todoList,dispatchTodoList] = useReducer(todoListReducer,todoListDefault);
 	const selectedTodoListDefault = [];
 	const [selectedTodoList,setSelectedTodoList] = useState([...selectedTodoListDefault]);
 
 	const handleTodoList = {
 		add:(newObj)=>{
-			newObj.id =  todoListIncrement.current;
-			setTodoList([
-				...todoList,
-				newObj
-			]);
-			todoListIncrement.current += 1;
+			dispatchTodoList({
+				type:'add',
+				newObj:newObj
+			});
 		},
 		remove:(id)=>{
-			setTodoList(
-				todoList
-				.filter((todo)=>{
-					return todo.id!==id;
-				})
-			);
+			if(!window.confirm('진짜로?')){
+				return;
+			}
+			dispatchTodoList({
+				type:'remove',
+				targetId:id
+			});
 			handleSelectedTodoList.remove(id);
 		},
 		edit:(id,newForm)=>{
-			setTodoList(
-				todoList.map((todo)=>{
-					if (todo.id===id){
-						return {...newForm,id:id};
-					}else {
-						return todo;
-					}
-				})
-			);
+			dispatchTodoList({
+				type:'edit',
+				targetId:id,
+				newObj:newForm
+			});
 			return true
 		},
 		truncate:()=>{
-			if(todoList.length>0){
-				if(window.confirm('진짜로?','dd')){
-					setTodoList([]);
-					setSelectedTodoList([]);
-					todoListIncrement.current = 0;
-				}
+			if(todoList.list.length<=0){
+				return;
 			}
+			if(!window.confirm('진짜로?')){
+				return;
+			}
+			dispatchTodoList({
+				type:'truncate'
+			});
+			handleSelectedTodoList.clear();
+		},
+		truncateForced:()=>{
+			dispatchTodoList({
+				type:'truncate'
+			});
+			handleSelectedTodoList.clear();
 		}
 	}
 
@@ -186,7 +189,7 @@ export default function Todo() {
 			<AddTodoInput handleTodoList={handleTodoList}/>
 		</div>
 		<h3>Todo List <button onClick={handleTodoList.truncate}>다지우깅</button></h3>
-		{todoList.map((todo,index)=>
+		{todoList.list.map((todo,index)=>
 			<TodoWidget 
 				todo={todo} 
 				handleTodoList={handleTodoList} 
