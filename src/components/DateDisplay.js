@@ -15,11 +15,26 @@ function secondsFormat(val) {
 	return val;
 }
 
+function monthFormat(val) {
+	while(val<0) {
+		val+=12;
+	}
+	while(val>=12) {
+		val-=12;
+	}
+	if (val<10) {
+		return '0'+parseInt(val);
+	}
+	return val;
+}
+
 function getDateString(date) {
-	return `
-		${date.getFullYear()}-${date.getMonth()}-${date.getDate()} 
-		${DAYS[date.getDay()]} ${date.getHours()}:${date.getMinutes()}:${secondsFormat(date.getSeconds())}
-	`
+	return `${date.getFullYear()}/${monthFormat(date.getMonth()+1)}/${date.getDate()} ${date.toLocaleTimeString('ko-KR',{
+		hourCycle: 'h23',
+		hour: "2-digit",
+		minute: "2-digit",
+		second: "2-digit"
+	})}`;
 }
 
 function useInterval(callback,timeout) {
@@ -30,7 +45,7 @@ function useInterval(callback,timeout) {
 	},[callback,timeout])
 }
 
-export default function DateWidget(){
+export default function DateDisplay(){
 	const [now,setNow] = useState(getDateString(new Date()));
 	const handleNow = {
 		refresh:()=>{

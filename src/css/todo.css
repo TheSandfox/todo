@@ -1,3 +1,7 @@
+:root {
+	--inner-width: 720px;
+}
+
 .addTodoList {
 	display: flex;
 	gap: 16px;
@@ -30,58 +34,57 @@
 			}
 		}
 	}
-	&>.expandContainerWrapper {
-		opacity: 0;
+
+	&>.expandContainer {
+		overflow-x: hidden;
+		width:0;
 		transition: 0.5s;
-		&.active {
-			opacity: 1;
-		}
-		&>.expandContainer {
-			overflow-x: hidden;
-			width:0;
-			transition: 0.5s;
-			display: flex;
-			&.active{
-				width:600px;
-				&>.inputContainer{
-					&>button {
-						opacity: 1;
-						pointer-events: auto;
-					}
+		display: flex;
+		&.active{
+			width:calc(720px - 64px - 16px);
+			&>.inputContainer{
+				&>button {
+					opacity: 1;
+					pointer-events: auto;
 				}
 			}
-			&>.inputContainer {
-				display: flex;
-				align-items: center;
+		}
+		&>.inputContainer {
+			display: flex;
+			align-items: center;
+			width:100%;
+			height:64px;
+			&>input[type=text] {
 				width:100%;
-				height:64px;
-				&>input[type=text] {
-					width:100%;
-					height:100%;
-					font-size: 32px;
-					padding: 8px;
-					background-color: #fff;
-				}
-				&>button {
-					position: absolute;
-					width:32px;
-					height:32px;
-					top:16px;
-					right:16px;
-					background: none;
-					border: none;
-					opacity: 0;
-					transition: 0.5s;
-					pointer-events: none;
-					&>.plus {
-						filter: drop-shadow( 4px 4px 0 #0003);
-						font-size: 20px;
-						display: flex;
-						align-items: center;
-						justify-content: center;
-					}
+				height:100%;
+				font-size: 32px;
+				padding: 8px;
+				background-color: #fff;
+			}
+			&>button {
+				position: absolute;
+				width:32px;
+				height:32px;
+				top:16px;
+				right:16px;
+				background: none;
+				border: none;
+				opacity: 0;
+				transition: 0.5s;
+				pointer-events: none;
+				&>.plus {
+					filter: drop-shadow( 4px 4px 0 #0003);
+					font-size: 20px;
+					display: flex;
+					align-items: center;
+					justify-content: center;
 				}
 			}
 		}
 	}
+}
+
+.todo {
+	width: 720px;
+	margin: 0 auto;
 }

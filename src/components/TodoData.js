@@ -1,11 +1,30 @@
+const prefix = 'todo_';
+const itemPrefix = 'item_';
+const keyPrefix = 'key_';
+
 const todoListDefault = {
-	list:[],
-	maxId:1
+	list:Object.keys(localStorage)
+		.filter((key)=>{return key.includes(itemPrefix)})
+		.map((key)=>{
+			return JSON.parse(localStorage.getItem(key));
+		})
+		.sort((next,prev)=>{
+			return parseInt(next.id) - parseInt(prev.id)
+		})
+	,
+	maxId:localStorage.getItem(`${prefix}${keyPrefix}max`)||1
 }
+
+// console.log(todoListDefault.list)
 
 const todoListReducer = (state,action)=>{
 	switch(action.type){
 	case 'add':
+		localStorage.setItem(`${prefix}${keyPrefix}max`,parseInt(state.maxId)+1);
+		localStorage.setItem(`${prefix}${itemPrefix}${state.maxId}`,JSON.stringify({
+			...action.newObj,
+			id:state.maxId
+		}));
 		return {
 			...state,
 			list:[
@@ -15,9 +34,10 @@ const todoListReducer = (state,action)=>{
 					id:state.maxId
 				}
 			],
-			maxId:state.maxId+1
+			maxId:parseInt(state.maxId)+1
 		}
 	case 'remove':
+		localStorage.removeItem(`${prefix}${itemPrefix}${action.targetId}`);
 		return {
 			...state,
 			list:[...state.list]
@@ -26,6 +46,10 @@ const todoListReducer = (state,action)=>{
 				})
 		}
 	case 'edit':
+		localStorage.setItem(`${prefix}${itemPrefix}${action.targetId}`,JSON.stringify({
+			...action.newObj,
+			id:action.targetId
+		}))
 		return {
 			...state,
 			list:[...state.list]
@@ -37,7 +61,12 @@ const todoListReducer = (state,action)=>{
 				)})
 		}
 	case 'truncate':
-		return todoListDefault;
+		localStorage.clear();
+		return {
+			...state,
+			list:[],
+			maxId:1
+		};
 	default:
 	}
 }

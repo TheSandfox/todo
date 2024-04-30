@@ -1,0 +1,36 @@
+.datePicker {
+	position: relative;
+	&>.datePickerInput {
+		user-select: none;
+	}
+	&>.datePickerController {
+		position: absolute;
+		display: none;
+		width: 100px;
+		height: 100px;
+		background-color: #0f0;
+		&.active{
+			display: block;
+		}
+		&>.days {
+			display: grid;
+			grid-template-columns: repeat(7,1fr);
+			&>.day {
+				border: 1px solid #000;
+				background-color: #090;
+				color:#0009;
+				transition: 0.15s;
+				&.inMonth {
+					background-color: #0f0;
+					color:#000f;
+				}
+				&.today {
+					background-color: #ff0;
+				}
+				&.active {
+					background-color: #f00;
+				}
+			}
+		}
+	}
+}

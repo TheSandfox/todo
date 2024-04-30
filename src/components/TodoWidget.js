@@ -1,8 +1,14 @@
 import { useEffect, useState, useRef } from "react";
 
-export default function TodoWidget({todo, handleTodoList, color, handleSelectedTodoList}) {
-	const checkInput = useRef(null);
+export default function TodoWidget({todo, handleTodoList, even, handleSelectedTodoList}) {
 	const editInput = useRef(null);
+	// 체크&핸들러
+	const [checked,setChecked] = useState(false);
+	const handleChecked = {
+		toggle:()=>{
+			setChecked(!checked);
+		}
+	}
 	// 뉴폼&핸들러
 	const [newForm,setNewForm] = useState({...todo})
 	const handleNewForm = {
@@ -49,6 +55,7 @@ export default function TodoWidget({todo, handleTodoList, color, handleSelectedT
 	// 체크박스 클릭 시
 	const checkCallback = (e)=>{
 		handleSelectedTodoList.switch(todo.id,e.target.checked);
+		handleChecked.toggle();
 	}
 	// 에딧모드 활성화 시 에딧인풋 포커싱
 	useEffect(()=>{
@@ -62,28 +69,28 @@ export default function TodoWidget({todo, handleTodoList, color, handleSelectedT
 			display:'flex',
 			alignItems:'center',
 			justifyContent:'space-between',
-			backgroundColor:color
+			backgroundColor:checked?'#999':(even?'#fc0':'#cf0')
 		}}
 	>
 		{/* 체크박스 */}
-		<input type="checkbox"
-			ref={checkInput}
+		<input 
+			type="checkbox"
 			style={{
 				width:'16px',
 				height:'16px'
 			}}
+			checked={checked}
 			onClick={checkCallback}
+			onChange={()=>{}}
 		>
 		</input>
 		{/* id 인디케이터 */}
-		<span 
-			style={{
-				color:'#999',
-				width:'48px',
-				display:'flex',
-				justifyContent:'center'
-			}}
-		>
+		<span style={{
+			color:'#999',
+			width:'48px',
+			display:'flex',
+			justifyContent:'center'
+		}}>
 			{todo.id}
 		</span>
 		{/* 할일이름 */}
@@ -91,7 +98,7 @@ export default function TodoWidget({todo, handleTodoList, color, handleSelectedT
 			// 할일 디스플레이
 			!editMode?
 			<div style={{flex:'1'}}>
-				{todo.title}{/* , {todo.time} */}
+				{todo.title} (일자){todo.date} (시간){todo.time}
 			</div>
 			:
 			// 할일수정
