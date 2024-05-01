@@ -1,123 +1,17 @@
-import { useRef, useState, Fragment, useReducer, useMemo, useCallback, useEffect } from "react";
+import { useState, Fragment, useReducer, useMemo, useCallback } from "react";
 import TodoWidget from "./TodoWidget";
 import DateDisplay from "./DateDisplay";
-
-import { FaPlus } from "react-icons/fa";
-import { FaRegPlusSquare } from "react-icons/fa";
+import AddTodoInput from "./AddTodoInput";
 import { todoListDefault, todoListReducer } from "./TodoData";
-import DatePicker from "./DatePicker";
+import { Link } from "react-router-dom";
 
-function AddTodoInput({handleTodoList}) {
-	const [dateValue,setDateValue] = useState(new Date());
-	const [timeValue,setTimeValue] = useState([
-		dateValue.getHours(),
-		dateValue.getMinutes(),
-		dateValue.getSeconds()
-	])
-	const [titleValue,setTitleValue] = useState('');
-	const [expand,setExpand] = useState(false);
-	const inputElement = useRef(null);
-	const inputValue = useMemo(()=>{
-		let newObj = {
-			title:titleValue,
-			date:dateValue.toLocaleDateString(),
-			time:timeValue
-		}
-		console.log(newObj);
-		return newObj
-	},[titleValue,dateValue,timeValue])
-	//인풋핸들러
-	const handleInputValue = {
-		addRequest:()=>{
-			let wantBreak = false;
-			let newObj = {
-				...inputValue
-			}
-			let values = Object.values(newObj);
-			values.every((value)=>{
-				if(value===''){wantBreak=true;return false;}
-				return true;
-			})
-			if (wantBreak){return;}
-			handleTodoList.add(newObj);
-		},
-		clear:()=>{
-			setTitleValue('');
-			setDateValue(new Date());
-			setTimeValue(['00','00','00']);
-		}
-	}
-	//타이틀 핸들러
-	const handleTitleValue = {
-		modify:(e)=>{
-			setTitleValue(e.target.value);
-		}
-	}
-	//데이트 핸들러
-	const handleDateValue = {
-		modify:(val)=>{
-			setDateValue(val);
-		}
-	}
-	//타임핸들러
-	const handleTimeValue = {
-		modify:(arr)=>{
-			setTimeValue([...arr]);
-		}
-	}
-	//익스팬드 핸들러
-	const handleExpand = {
-		toggle:()=>{
-			setExpand(!expand);
-		}
-	}
-	//리스트 추가 요청
-	const submit = ()=>{
-		handleInputValue.addRequest();
-		handleInputValue.clear();
-	}
-	//버튼클릭콜백
-	const buttonClickCallback = ()=>{
-		submit();
-		inputElement.current.focus();
-	}
-	//엔터콜백
-	const enterCallback = (e)=>{
-		if(e.keyCode!==13){return;}
-		submit();
-	}
-	//리턴 JSX
-	return <div className="addTodoList">
-		<button className={`expandButton dotbox ${expand?'expanded':''}`} onClick={handleExpand.toggle}>
-			<div className="plus">
-				<FaPlus/>
-			</div>
-		</button>
-		<div className={`expandContainer dotbox ${expand?'active':''}`}>
-			<div className={`inputContainer`}>
-				{/* 새로 할 일 입력창 */}
-				<input 
-					ref={inputElement}
-					type='text' 
-					name='title' 
-					value={titleValue} 
-					onChange={handleTitleValue.modify} 
-					onKeyDown={enterCallback} 
-					placeholder="할 일 입력..."
-				/>
-				{/* 추가 버튼 */}
-				<button onClick={buttonClickCallback}>
-					<div className="plus">
-						<FaRegPlusSquare className=''/>
-					</div>
-				</button>
-			</div>
-		</div>
-		<DatePicker name={'date'} value={dateValue} onChange={handleDateValue.modify}/>
-	</div>
+function TodoTitle({children}) {
+	return <h1 className="todoTitle fontBitBit">
+		{children}
+	</h1>
 }
 
-export default function Todo() {
+export default function Todo({checkOnly}) {
 	const [todoList,dispatchTodoList] = useReducer(todoListReducer,todoListDefault);
 	const selectedTodoListDefault = [];
 	const [selectedTodoList,setSelectedTodoList] = useState([...selectedTodoListDefault]);
@@ -140,12 +34,18 @@ export default function Todo() {
 			handleSelectedTodoList.remove(id);
 		},
 		edit:(id,newForm)=>{
+			console.log(newForm.date);
 			dispatchTodoList({
 				type:'edit',
 				targetId:id,
 				newObj:newForm
 			});
 			return true
+		},
+		sort:()=>{
+			dispatchTodoList({
+				type:'sort'
+			})
 		},
 		truncate:()=>{
 			if(todoList.list.length<=0){
@@ -174,15 +74,12 @@ export default function Todo() {
 	const handleSelectedTodoList = {
 
 		switch: useCallback((id,flag)=>{
-			console.log('얍')
 			if(flag){
-				console.log('켜짐')
 				setSelectedTodoList([
 					...selectedTodoList,
 					id
 				])
 			} else {
-				console.log('꺼짐')
 				setSelectedTodoList(
 					selectedTodoList
 					.filter((item)=>{
@@ -210,24 +107,40 @@ export default function Todo() {
 		return selectedTodoList.length
 	},[selectedTodoList])
 
+	//RETURN JSX
 	return <div className="todo">
+		<TodoTitle>뭐하려고했더라</TodoTitle>
+		<Link to={'/'}>전체보기</Link>
+		<br/>
+		<Link to={'checked'}>체크된애만보기</Link>
 		<DateDisplay/>
 		<AddTodoInput handleTodoList={handleTodoList}/>
-		<h3>Todo List <button onClick={handleTodoList.truncate}>다지우깅</button></h3>
-		{todoList.list.map((todo,index)=>
-			<TodoWidget 
+		<h3>
+			Todo List 
+			<button onClick={handleTodoList.truncate}>다지우기</button>
+			<button onClick={handleTodoList.sort}>정렬하기</button>
+		</h3>
+		<div className={'dotbox'}>
+		{todoList.list.map((todo,index)=>{
+			if (!checkOnly||selectedTodoList.includes(todo.id)) {
+				return <TodoWidget 
 				todo={todo} 
 				handleTodoList={handleTodoList} 
 				handleSelectedTodoList={handleSelectedTodoList} 
 				key={todo.id} 
 				even={index%2===0}
-			/>
-		)}
-		{selectedTodoList.map((item)=>
-			<div key={item}>
-				<Fragment>{item}, </Fragment>
+				/>
+			} else {
+				return <Fragment key={todo.id}></Fragment>
+			}
+
+		})}
+		</div>
+		{selectedTodoList.map((item)=>{
+			return <div key={item}>
+				<Fragment>{item}</Fragment>
 			</div>
-		)}
+		})}
 		<div>총 게시물 갯수: {countTodoList}</div>
 		<div>선택된 게시물 갯수: {countSelectedTodoList}</div>
 	</div>

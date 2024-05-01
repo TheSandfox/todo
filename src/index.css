@@ -1,2 +1,6 @@
 @import url('https://thesandfox.github.io/css/index.css');
 @import url('css/todo.css');
+
+input{
+	outline: none;
+}

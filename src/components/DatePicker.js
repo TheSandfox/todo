@@ -1,7 +1,7 @@
 import 'css/datepicker.css'
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 
-export default function DatePicker({name,value,onChange}) {
+export default function DatePicker({className,name,value,onChange}) {
 	const dateController = useRef(null);
 	const [dateValue,setDateValue] = useState(value);
 	const [editMode,setEditMode] = useState(false);
@@ -63,19 +63,29 @@ export default function DatePicker({name,value,onChange}) {
 			onChange(dateValue);
 		}
 	},[dateValue])
-	//선택버튼클릭
-	const selectButtonCallback = ()=>{
+	const select = ()=>{
 		setDateValue(targetDate);
 		setEditMode(false);
 	}
+	//선택버튼클릭
+	const selectButtonCallback = ()=>{
+		select();
+	}
+	//엔터치기
+	const dblClickCallback = (e)=>{
+		select();
+	}
 	//return JSX
-	return <div className="datePicker">
-		<input className="datePickerInput" 
-			value={dateValue.toLocaleDateString('ko-KR')} 
-			readOnly={true}
-			name={name}
-			onClick={handleEditMode.toggle}
-		/>
+	return <div className='datePickerWrapper'>
+		<div className={className?`datePicker ${className}`:''}>
+			{/* 날짜 인풋(리드온리) */}
+			<input className="datePickerInput fontBitBit" 
+				value={dateValue.toLocaleDateString('ko-KR')} 
+				readOnly={true}
+				name={name}
+				onClick={handleEditMode.toggle}
+			/>
+		</div>
 		<div ref={dateController} className={`datePickerController ${editMode?'active':''}`}>
 			{/* 연,월 디스플레이 */}
 			<div className='yearAndMonth'>
@@ -102,6 +112,9 @@ export default function DatePicker({name,value,onChange}) {
 						} 
 						onClick={
 							()=>{setTargetDate(day.dateValue);}
+						}
+						onDoubleClick={
+							dblClickCallback
 						}
 					>
 						{day.display}

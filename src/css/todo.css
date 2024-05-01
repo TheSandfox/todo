@@ -2,89 +2,59 @@
 	--inner-width: 720px;
 }
 
-.addTodoList {
-	display: flex;
-	gap: 16px;
-	&>.expandButton{
-		width:64px;
-		height:64px;
-		background-color: #3c3;
-		border: none;
-		transition: 0.25s;
-		font-size:24px;
-		color:#fff;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		&.expanded {
-			background-color: #c36;
-			&>.plus {
-				&>*{
-					transform: rotate(225deg);
-				}
-			}
-		}
-		&>.plus {
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			filter: drop-shadow( 4px 4px 0 #0003);
-			&>*{
-				transition: 0.5s;
-			}
-		}
-	}
-
-	&>.expandContainer {
-		overflow-x: hidden;
-		width:0;
-		transition: 0.5s;
-		display: flex;
-		&.active{
-			width:calc(720px - 64px - 16px);
-			&>.inputContainer{
-				&>button {
-					opacity: 1;
-					pointer-events: auto;
-				}
-			}
-		}
-		&>.inputContainer {
-			display: flex;
-			align-items: center;
-			width:100%;
-			height:64px;
-			&>input[type=text] {
-				width:100%;
-				height:100%;
-				font-size: 32px;
-				padding: 8px;
-				background-color: #fff;
-			}
-			&>button {
-				position: absolute;
-				width:32px;
-				height:32px;
-				top:16px;
-				right:16px;
-				background: none;
-				border: none;
-				opacity: 0;
-				transition: 0.5s;
-				pointer-events: none;
-				&>.plus {
-					filter: drop-shadow( 4px 4px 0 #0003);
-					font-size: 20px;
-					display: flex;
-					align-items: center;
-					justify-content: center;
-				}
-			}
-		}
-	}
-}
-
 .todo {
 	width: 720px;
 	margin: 0 auto;
+}
+
+.todoTitle {
+	font-size: 40px;
+}
+
+.todoWidget {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	width:100%;
+	height:48px;
+	&>.checkboxWrapper {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+	}
+	&>.mid {
+		display: flex;
+		align-items: center;
+	}
+	&>.right {
+		height:100%;
+		display: flex;
+		align-items: center;
+		padding: 8px;
+		gap: 8px;
+		&>*{
+			outline: none;
+			border: none;
+			width: 32px;
+			height: 32px;
+		}
+		&>.edit {
+			background-color: #ccc;
+			&.active {
+				background-color: #fc0;
+			}
+		}
+		&>.delete {
+			background-color: #c33;
+		}
+	}
+	&.even {
+		background-color: #fc0;
+	}
+	&.odd {
+		background-color: #cf0;
+	}
+	&.checked {
+		background-color: #999;
+	}
 }

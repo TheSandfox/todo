@@ -1,35 +1,42 @@
+.datePickerWrapper {
+	position: relative;
+}
 .datePicker {
 	position: relative;
-	&>.datePickerInput {
+	width:100%;
+	height:100%;
+	& .datePickerInput {
 		user-select: none;
+		font-size: 24px;
 	}
-	&>.datePickerController {
-		position: absolute;
-		display: none;
-		width: 100px;
-		height: 100px;
-		background-color: #0f0;
-		&.active{
-			display: block;
-		}
-		&>.days {
-			display: grid;
-			grid-template-columns: repeat(7,1fr);
-			&>.day {
-				border: 1px solid #000;
-				background-color: #090;
-				color:#0009;
-				transition: 0.15s;
-				&.inMonth {
-					background-color: #0f0;
-					color:#000f;
-				}
-				&.today {
-					background-color: #ff0;
-				}
-				&.active {
-					background-color: #f00;
-				}
+}
+.datePickerController {
+	position: absolute;
+	display: none;
+	width: 100px;
+	height: 100px;
+	background-color: #0f0;
+	z-index:4;
+	&.active{
+		display: block;
+	}
+	&>.days {
+		display: grid;
+		grid-template-columns: repeat(7,1fr);
+		&>.day {
+			border: 1px solid #000;
+			background-color: #090;
+			color:#0009;
+			transition: 0.15s;
+			&.inMonth {
+				background-color: #0f0;
+				color:#000f;
+			}
+			&.today {
+				background-color: #ff0;
+			}
+			&.active {
+				background-color: #f00;
 			}
 		}
 	}

@@ -1,0 +1,24 @@
+.timePicker {
+	display: flex;
+	align-items: center;
+	font-size: 24px;
+	padding: 8px;
+	background-color: #fff;
+	& input[type=number] {
+		font-size: 24px;
+		width: 80px;
+		border: none;
+		outline: none;
+		text-align: center;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+	}
+	& .timeColone {
+		width: 16px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding-bottom: 6px;
+	}
+}

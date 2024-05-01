@@ -9,7 +9,7 @@ const todoListDefault = {
 			return JSON.parse(localStorage.getItem(key));
 		})
 		.sort((next,prev)=>{
-			return parseInt(next.id) - parseInt(prev.id)
+			return parseInt(new Date(next.date).getTime()) - parseInt(new Date(prev.date).getTime())
 		})
 	,
 	maxId:localStorage.getItem(`${prefix}${keyPrefix}max`)||1
@@ -59,6 +59,13 @@ const todoListReducer = (state,action)=>{
 					:{...action.newObj,
 						id:item.id}
 				)})
+		}
+	case 'sort':
+		return  {
+			...state,
+			list:state.list.sort((next,prev)=>{
+				return parseInt(new Date(next.date).getTime()) - parseInt(new Date(prev.date).getTime())
+			})
 		}
 	case 'truncate':
 		localStorage.clear();

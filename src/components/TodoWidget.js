@@ -1,4 +1,5 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useMemo } from "react";
+import { timeFormat } from "./TimePicker";
 
 export default function TodoWidget({todo, handleTodoList, even, handleSelectedTodoList}) {
 	const editInput = useRef(null);
@@ -10,7 +11,10 @@ export default function TodoWidget({todo, handleTodoList, even, handleSelectedTo
 		}
 	}
 	// 뉴폼&핸들러
-	const [newForm,setNewForm] = useState({...todo})
+	const [newForm,setNewForm] = useState({
+		...todo,
+		date:new Date(todo.date)
+	})
 	const handleNewForm = {
 		modify:(e)=>{
 			setNewForm({
@@ -38,6 +42,10 @@ export default function TodoWidget({todo, handleTodoList, even, handleSelectedTo
 			setEditMode(!editMode);
 		}
 	}
+	// 데이트밸류
+	const dateValue = useMemo(()=>{
+		return new Date(todo.date)
+	},[todo])
 	// 삭제버튼 클릭 시
 	const removeRequest = ()=>{
 		handleTodoList.remove(todo.id);
@@ -63,46 +71,35 @@ export default function TodoWidget({todo, handleTodoList, even, handleSelectedTo
 	},[editMode])
 	// 리턴 JSX
 	return <div
-		style={{
-			width:'100%',
-			height:'48px',
-			display:'flex',
-			alignItems:'center',
-			justifyContent:'space-between',
-			backgroundColor:checked?'#999':(even?'#fc0':'#cf0')
-		}}
+		className={
+			`todoWidget ${checked?'checked':''} ${even?'even':'odd'}`
+		}
 	>
 		{/* 체크박스 */}
-		<input 
-			type="checkbox"
-			style={{
-				width:'16px',
-				height:'16px'
-			}}
-			checked={checked}
-			onClick={checkCallback}
-			onChange={()=>{}}
-		>
-		</input>
-		{/* id 인디케이터 */}
-		<span style={{
-			color:'#999',
-			width:'48px',
-			display:'flex',
-			justifyContent:'center'
-		}}>
-			{todo.id}
-		</span>
+		<div className={'checkboxWrapper left'}>
+			<input 
+				type="checkbox"
+				style={{
+					width:'16px',
+					height:'16px'
+				}}
+				checked={checked}
+				onClick={checkCallback}
+				onChange={()=>{}}
+			>
+			</input>
+		</div>
 		{/* 할일이름 */}
-		{
-			// 할일 디스플레이
-			!editMode?
-			<div style={{flex:'1'}}>
-				{todo.title} (일자){todo.date} (시간){todo.time}
+		<div className={'mid'}>
+		{!editMode
+			?<div className="">
+				{todo.title} (일자){dateValue.toLocaleDateString()} {
+					todo.time
+					?`${timeFormat(todo.time[0])}:${timeFormat(todo.time[1])}`
+					:''
+				}
 			</div>
-			:
-			// 할일수정
-			<>
+			:<>
 				<input
 					ref={editInput}
 					type="text"
@@ -117,28 +114,21 @@ export default function TodoWidget({todo, handleTodoList, even, handleSelectedTo
 				</button>
 			</>
 		}
-		{/* 수정모드체인지 */}
-		<button onClick={handleEditMode.toggle} 
-			style={{
-				width:'48px',
-				height:'100%',
-				color:(!editMode?'#0f0':'#330'),
-				fontWeight:'bold',
-				fontSize:'12px'
-			}}
-		>
-			{!editMode?'바꾸깅':'안바꿀랭'}
-		</button>
-		{/* 삭제버튼 */}
-		<button onClick={removeRequest} 
-			style={{
-				width:'48px',
-				height:'100%',
-				color:'#f00',
-				fontWeight:'bold'
-			}}
-		>
-			X
-		</button>
+		</div>
+		{/* 버튼컨테이너 */}
+		<div className={'right'}>
+			{/* 수정모드체인지 */}
+			<button onClick={handleEditMode.toggle}
+				className={'dotbox edit'+(editMode?' active':'')}
+			>
+				{editMode?'취소':'수정'}
+			</button>
+			{/* 삭제버튼 */}
+			<button onClick={removeRequest} 
+				className={'dotbox delete'}
+			>
+				X
+			</button>
+		</div>
 	</div>
 }
