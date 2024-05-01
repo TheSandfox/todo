@@ -9,27 +9,25 @@ import DatePicker from "./DatePicker";
 
 function AddTodoInput({handleTodoList}) {
 	const [dateValue,setDateValue] = useState(new Date());
+	const [timeValue,setTimeValue] = useState([
+		dateValue.getHours(),
+		dateValue.getMinutes(),
+		dateValue.getSeconds()
+	])
+	const [titleValue,setTitleValue] = useState('');
 	const [expand,setExpand] = useState(false);
 	const inputElement = useRef(null);
-	const inputValueDefault = {
-		title:'',
-		date: dateValue.toLocaleDateString(),
-		time: dateValue.toLocaleTimeString()//''//임시
-		// name:''
-	}
-	const [inputValue,setInputValue] = useState({
-		...inputValueDefault
-	});
-
-	console.log(inputValue);
+	const inputValue = useMemo(()=>{
+		let newObj = {
+			title:titleValue,
+			date:dateValue.toLocaleDateString(),
+			time:timeValue
+		}
+		console.log(newObj);
+		return newObj
+	},[titleValue,dateValue,timeValue])
 	//인풋핸들러
 	const handleInputValue = {
-		modify:(e)=>{
-			setInputValue({
-				...inputValue,
-				[e.target.name]:e.target.value
-			})
-		},
 		addRequest:()=>{
 			let wantBreak = false;
 			let newObj = {
@@ -44,9 +42,27 @@ function AddTodoInput({handleTodoList}) {
 			handleTodoList.add(newObj);
 		},
 		clear:()=>{
-			setInputValue({
-				...inputValueDefault
-			})
+			setTitleValue('');
+			setDateValue(new Date());
+			setTimeValue(['00','00','00']);
+		}
+	}
+	//타이틀 핸들러
+	const handleTitleValue = {
+		modify:(e)=>{
+			setTitleValue(e.target.value);
+		}
+	}
+	//데이트 핸들러
+	const handleDateValue = {
+		modify:(val)=>{
+			setDateValue(val);
+		}
+	}
+	//타임핸들러
+	const handleTimeValue = {
+		modify:(arr)=>{
+			setTimeValue([...arr]);
 		}
 	}
 	//익스팬드 핸들러
@@ -84,8 +100,8 @@ function AddTodoInput({handleTodoList}) {
 					ref={inputElement}
 					type='text' 
 					name='title' 
-					value={inputValue['title']} 
-					onChange={handleInputValue.modify} 
+					value={titleValue} 
+					onChange={handleTitleValue.modify} 
 					onKeyDown={enterCallback} 
 					placeholder="할 일 입력..."
 				/>
@@ -97,7 +113,7 @@ function AddTodoInput({handleTodoList}) {
 				</button>
 			</div>
 		</div>
-		<DatePicker name={'date'} value={dateValue} onChange={handleInputValue.modify}/>
+		<DatePicker name={'date'} value={dateValue} onChange={handleDateValue.modify}/>
 	</div>
 }
 

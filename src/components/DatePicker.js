@@ -60,9 +60,7 @@ export default function DatePicker({name,value,onChange}) {
 	//외부 onChange
 	useEffect(()=>{
 		if(onChange) {
-			onChange({target:
-				{value:dateValue.toLocaleDateString('ko-KR'),name:name}
-			});
+			onChange(dateValue);
 		}
 	},[dateValue])
 	//선택버튼클릭
