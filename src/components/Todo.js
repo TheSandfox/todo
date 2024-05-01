@@ -8,12 +8,13 @@ import { todoListDefault, todoListReducer } from "./TodoData";
 import DatePicker from "./DatePicker";
 
 function AddTodoInput({handleTodoList}) {
+	const [dateValue,setDateValue] = useState(new Date());
 	const [expand,setExpand] = useState(false);
 	const inputElement = useRef(null);
 	const inputValueDefault = {
 		title:'',
-		date: new Date().toLocaleDateString(),
-		time: new Date().toLocaleTimeString()//''//임시
+		date: dateValue.toLocaleDateString(),
+		time: dateValue.toLocaleTimeString()//''//임시
 		// name:''
 	}
 	const [inputValue,setInputValue] = useState({
@@ -96,7 +97,7 @@ function AddTodoInput({handleTodoList}) {
 				</button>
 			</div>
 		</div>
-		<DatePicker name={'date'} value={new Date()} onChange={handleInputValue.modify}/>
+		<DatePicker name={'date'} value={dateValue} onChange={handleInputValue.modify}/>
 	</div>
 }
 

@@ -57,15 +57,18 @@ export default function DatePicker({name,value,onChange}) {
 			window.removeEventListener('mousedown',downCallback);
 		}
 	},[editMode])
-	//선택버튼클릭
-	const selectButtonCallback = ()=>{
-		setDateValue(targetDate);
-		setEditMode(false);
+	//외부 onChange
+	useEffect(()=>{
 		if(onChange) {
 			onChange({target:
 				{value:dateValue.toLocaleDateString('ko-KR'),name:name}
 			});
 		}
+	},[dateValue])
+	//선택버튼클릭
+	const selectButtonCallback = ()=>{
+		setDateValue(targetDate);
+		setEditMode(false);
 	}
 	//return JSX
 	return <div className="datePicker">
