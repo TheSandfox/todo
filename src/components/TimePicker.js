@@ -3,13 +3,13 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import 'css/timepicker.css'
 
 function timeFormat(str) {
-	if (parseInt(str)<10&&str.length<2) {
-		return '0'+str;
-	}
+	if (isNaN(parseInt(str))) {return '00'}
+	if (String(str).length<2) {return '0'+str;}
+	// if (parseInt(str)<10) {return '0'+str;}
 	return String(str);
 }
 
-function TimePicker({value,onChange,visibleFlag}){
+function TimePicker({value,onChange,visibleFlag,className}){
 	const [hoursInput,setHoursInput] = useState(value[0]);
 	const [minutesInput,setMinutesInput] = useState(value[1]);
 	const [secondsInput,setSecondsInput] = useState(value[2]);
@@ -25,10 +25,16 @@ function TimePicker({value,onChange,visibleFlag}){
 			if(parseInt(e.target.value)>23) {
 				setHoursInput(23);
 			} else if (parseInt(e.target.value)<0) {
-				setHoursInput(0);
+				setHoursInput(timeFormat(0));
 			} else {
-				setHoursInput(e.target.value);
+				setHoursInput(timeFormat(e.target.value));
 			}
+		},
+		validate:(e)=>{
+			let val = parseInt(e.target.value);
+			console.log(val);
+			if (isNaN(val)||val<0){setHoursInput('00');return;}
+			setHoursInput(timeFormat(val));
 		}
 	}
 	const handleMinutesInput = {
@@ -37,10 +43,15 @@ function TimePicker({value,onChange,visibleFlag}){
 			if(parseInt(e.target.value)>59) {
 				setMinutesInput(59)
 			} else if (parseInt(e.target.value)<0) {
-				setMinutesInput(0);
+				setMinutesInput(timeFormat(0));
 			} else {
-				setMinutesInput(e.target.value)
+				setMinutesInput(timeFormat(e.target.value))
 			}
+		},
+		validate:(e)=>{
+			let val = parseInt(e.target.value);
+			if (isNaN(val)||val<0){setMinutesInput('00');return;}
+			setMinutesInput(timeFormat(val));
 		}
 	}
 	const handleSecondsInput = {
@@ -49,10 +60,15 @@ function TimePicker({value,onChange,visibleFlag}){
 			if(parseInt(e.target.value)>59) {
 				setSecondsInput(59)
 			} else if (parseInt(e.target.value)<0) {
-				setSecondsInput(0);
+				setSecondsInput(timeFormat(0));
 			} else {
-				setSecondsInput(e.target.value)
+				setSecondsInput(timeFormat(e.target.value))
 			}
+		},
+		validate:(e)=>{
+			let val = parseInt(e.target.value);
+			if (isNaN(val)||val<0){setSecondsInput('00');return;}
+			setSecondsInput(timeFormat(val));
 		}
 	}
 	const timeValue = useMemo(()=>{
@@ -67,7 +83,7 @@ function TimePicker({value,onChange,visibleFlag}){
 			onChange(timeValue);
 		}
 	},[timeValue])
-	return <div className="timePicker dotbox fontBitBit">
+	return <div className={"timePicker"+(className?(' '+className):'')}>
 		{visible[0]
 			?<><input 
 				type="number" 
@@ -76,6 +92,7 @@ function TimePicker({value,onChange,visibleFlag}){
 				name="hours" 
 				value={hoursInput} 
 				onChange={handleHoursInput.modify}
+				onBlur={handleHoursInput.validate}
 			/></>
 			:<></>
 		}
@@ -88,6 +105,7 @@ function TimePicker({value,onChange,visibleFlag}){
 				name="minutes" 
 				value={minutesInput} 
 				onChange={handleMinutesInput.modify}
+				onBlur={handleMinutesInput.validate}
 			/></>
 			:<></>
 		}
@@ -100,6 +118,7 @@ function TimePicker({value,onChange,visibleFlag}){
 				name="seconds" 
 				value={secondsInput} 
 				onChange={handleSecondsInput.modify}
+				onBlur={handleSecondsInput.validate}
 			/></>
 			:<></>
 		}

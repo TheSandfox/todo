@@ -1,7 +1,9 @@
-const prefix = 'todo_';
-const itemPrefix = 'item_';
-const keyPrefix = 'key_';
+const prefix = 'todo';
+const itemPrefix = 'item';
+const keyPrefix = 'key';
+const selectedPrefix = 'selected';
 
+//로컬에서 리스트 가져오기
 const todoListDefault = {
 	list:Object.keys(localStorage)
 		.filter((key)=>{return key.includes(itemPrefix)})
@@ -12,7 +14,9 @@ const todoListDefault = {
 			return parseInt(new Date(next.date).getTime()) - parseInt(new Date(prev.date).getTime())
 		})
 	,
-	maxId:localStorage.getItem(`${prefix}${keyPrefix}max`)||1
+	selected:JSON.parse(localStorage.getItem(`${prefix}_${selectedPrefix}`))||[]
+	,
+	maxId:localStorage.getItem(`${prefix}_${keyPrefix}max`)||1
 }
 
 // console.log(todoListDefault.list)
@@ -20,8 +24,8 @@ const todoListDefault = {
 const todoListReducer = (state,action)=>{
 	switch(action.type){
 	case 'add':
-		localStorage.setItem(`${prefix}${keyPrefix}max`,parseInt(state.maxId)+1);
-		localStorage.setItem(`${prefix}${itemPrefix}${state.maxId}`,JSON.stringify({
+		localStorage.setItem(`${prefix}_${keyPrefix}max`,parseInt(state.maxId)+1);
+		localStorage.setItem(`${prefix}_${itemPrefix}_${state.maxId}`,JSON.stringify({
 			...action.newObj,
 			id:state.maxId
 		}));
@@ -31,13 +35,13 @@ const todoListReducer = (state,action)=>{
 				...state.list,
 				{
 					...action.newObj,
-					id:state.maxId
+					id:parseInt(state.maxId)
 				}
 			],
 			maxId:parseInt(state.maxId)+1
 		}
 	case 'remove':
-		localStorage.removeItem(`${prefix}${itemPrefix}${action.targetId}`);
+		localStorage.removeItem(`${prefix}_${itemPrefix}_${action.targetId}`);
 		return {
 			...state,
 			list:[...state.list]
@@ -46,7 +50,7 @@ const todoListReducer = (state,action)=>{
 				})
 		}
 	case 'edit':
-		localStorage.setItem(`${prefix}${itemPrefix}${action.targetId}`,JSON.stringify({
+		localStorage.setItem(`${prefix}_${itemPrefix}_${action.targetId}`,JSON.stringify({
 			...action.newObj,
 			id:action.targetId
 		}))
@@ -72,8 +76,40 @@ const todoListReducer = (state,action)=>{
 		return {
 			...state,
 			list:[],
+			selected:[],
 			maxId:1
 		};
+	case 'select':
+		let selectArr = (
+			action.flag
+			//셀렉티드에 추가
+			?[...state.selected,parseInt(action.targetId)]
+			//셀렉티드에서 삭제
+			:[...state.selected].filter((id)=>{return id!==action.targetId})
+		)
+		localStorage.setItem(`${prefix}_${selectedPrefix}`,JSON.stringify(selectArr));
+		return {
+			...state,
+			selected:selectArr
+		}
+		break;
+	case 'selectEmpty':
+		localStorage.removeItem(`${prefix}_${selectedPrefix}`)
+		return  {
+			...state,
+			list:[...state.list],
+			selected:[]
+		}
+	case 'selectAll':
+		let selectAllArr = [...state.list].map((item)=>{
+			return parseInt(item.id)
+		})
+		localStorage.setItem(`${prefix}_${selectedPrefix}`,JSON.stringify(selectAllArr));
+		return {
+			...state,
+			list:[...state.list],
+			selected:selectAllArr
+		}
 	default:
 	}
 }

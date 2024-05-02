@@ -76,10 +76,10 @@ export default function DatePicker({className,name,value,onChange}) {
 		select();
 	}
 	//return JSX
-	return <div className='datePickerWrapper'>
+	return <>
 		<div className={className?`datePicker ${className}`:''}>
 			{/* 날짜 인풋(리드온리) */}
-			<input className="datePickerInput fontBitBit" 
+			<input className="datePickerInput" 
 				value={dateValue.toLocaleDateString('ko-KR')} 
 				readOnly={true}
 				name={name}
@@ -126,5 +126,5 @@ export default function DatePicker({className,name,value,onChange}) {
 				<button onClick={selectButtonCallback}>선택</button>
 			</div>
 		</div>
-	</div>
+	</>
 }

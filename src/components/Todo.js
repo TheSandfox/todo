@@ -13,9 +13,6 @@ function TodoTitle({children}) {
 
 export default function Todo({checkOnly}) {
 	const [todoList,dispatchTodoList] = useReducer(todoListReducer,todoListDefault);
-	const selectedTodoListDefault = [];
-	const [selectedTodoList,setSelectedTodoList] = useState([...selectedTodoListDefault]);
-
 	const handleTodoList = {
 		add:(newObj)=>{
 			dispatchTodoList({
@@ -34,7 +31,7 @@ export default function Todo({checkOnly}) {
 			handleSelectedTodoList.remove(id);
 		},
 		edit:(id,newForm)=>{
-			console.log(newForm.date);
+			// console.log(newForm.date);
 			dispatchTodoList({
 				type:'edit',
 				targetId:id,
@@ -57,55 +54,53 @@ export default function Todo({checkOnly}) {
 			dispatchTodoList({
 				type:'truncate'
 			});
-			handleSelectedTodoList.clear();
 		},
 		truncateForced:()=>{
 			dispatchTodoList({
 				type:'truncate'
 			});
-			handleSelectedTodoList.clear();
 		}
+	}
+
+	const handleSelectedTodoList = {
+
+		switch: useCallback((id,flag)=>{
+			dispatchTodoList({
+				type:'select',
+				targetId:id,
+				flag:flag
+			})
+		},[todoList.selected]),
+
+		remove: useCallback((id)=>{
+			dispatchTodoList({
+				type:'select',
+				targetId:id,
+				flag:false
+			})
+		},[todoList.selected]),
+
+		selectEmpty: useCallback(()=>{
+			dispatchTodoList({
+				type:'selectEmpty',
+			})
+		},[]),
+
+		selectAll: useCallback(()=>{
+			dispatchTodoList({
+				type:'selectAll'
+			})
+		})
+
 	}
 
 	const countTodoList = useMemo(()=>{
 		return todoList.list.length
 	},[todoList.list])
 
-	const handleSelectedTodoList = {
-
-		switch: useCallback((id,flag)=>{
-			if(flag){
-				setSelectedTodoList([
-					...selectedTodoList,
-					id
-				])
-			} else {
-				setSelectedTodoList(
-					selectedTodoList
-					.filter((item)=>{
-						return item!==id
-					})
-				);
-			}
-		},[selectedTodoList]),
-
-		remove: useCallback((id)=>{
-			setSelectedTodoList(
-				selectedTodoList.filter((idNum)=>{
-					return id!==idNum;
-				})
-			);
-		},[selectedTodoList]),
-
-		clear: useCallback(()=>{
-			setSelectedTodoList([]);
-		},[])
-
-	}
-
 	const countSelectedTodoList = useMemo(()=>{
-		return selectedTodoList.length
-	},[selectedTodoList])
+		return todoList.selected.length
+	},[todoList.selected])
 
 	//RETURN JSX
 	return <div className="todo">
@@ -119,29 +114,37 @@ export default function Todo({checkOnly}) {
 			Todo List 
 			<button onClick={handleTodoList.truncate}>다지우기</button>
 			<button onClick={handleTodoList.sort}>정렬하기</button>
+			<button onClick={handleSelectedTodoList.selectAll}>전체선택</button>
+			<button onClick={handleSelectedTodoList.selectEmpty}>전체선택해제</button>
 		</h3>
-		<div className={'dotbox'}>
-		{todoList.list.map((todo,index)=>{
-			if (!checkOnly||selectedTodoList.includes(todo.id)) {
-				return <TodoWidget 
-				todo={todo} 
-				handleTodoList={handleTodoList} 
-				handleSelectedTodoList={handleSelectedTodoList} 
-				key={todo.id} 
-				even={index%2===0}
-				/>
-			} else {
-				return <Fragment key={todo.id}></Fragment>
-			}
+		{/* 게시물들 뿌리기 (리스트가 있을 때에만)*/}
+		{countTodoList>0
+			?<div className={'dotbox'}>
+			{todoList.list.map((todo,index)=>{
+				if (!checkOnly||todoList.selected.includes(todo.id)) {
+					return <TodoWidget 
+					todo={{...todo,checked:todoList.selected.includes(todo.id)}} 
+					handleTodoList={handleTodoList} 
+					handleSelectedTodoList={handleSelectedTodoList} 
+					key={todo.id} 
+					even={index%2===0}
+					/>
+				} else {
+					return <Fragment key={todo.id}></Fragment>
+				}
 
-		})}
-		</div>
-		{selectedTodoList.map((item)=>{
+			})}
+			</div>
+			:<></>
+		}
+		{/* 디버깅용 */}
+		{/* 선택된 게시물 */}
+		{/* {todoList.selected.map((item)=>{
 			return <div key={item}>
 				<Fragment>{item}</Fragment>
 			</div>
-		})}
-		<div>총 게시물 갯수: {countTodoList}</div>
-		<div>선택된 게시물 갯수: {countSelectedTodoList}</div>
+		})} */}
+		{/* <div>총 게시물 갯수: {countTodoList}</div>
+		<div>선택된 게시물 갯수: {countSelectedTodoList}</div> */}
 	</div>
 }

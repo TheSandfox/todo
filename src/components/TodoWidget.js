@@ -3,13 +3,6 @@ import { timeFormat } from "./TimePicker";
 
 export default function TodoWidget({todo, handleTodoList, even, handleSelectedTodoList}) {
 	const editInput = useRef(null);
-	// 체크&핸들러
-	const [checked,setChecked] = useState(false);
-	const handleChecked = {
-		toggle:()=>{
-			setChecked(!checked);
-		}
-	}
 	// 뉴폼&핸들러
 	const [newForm,setNewForm] = useState({
 		...todo,
@@ -63,16 +56,17 @@ export default function TodoWidget({todo, handleTodoList, even, handleSelectedTo
 	// 체크박스 클릭 시
 	const checkCallback = (e)=>{
 		handleSelectedTodoList.switch(todo.id,e.target.checked);
-		handleChecked.toggle();
 	}
 	// 에딧모드 활성화 시 에딧인풋 포커싱
 	useEffect(()=>{
-		if (editMode) {editInput.current.select();}
+		if (editMode) {
+			editInput.current.select();
+		}
 	},[editMode])
 	// 리턴 JSX
 	return <div
 		className={
-			`todoWidget ${checked?'checked':''} ${even?'even':'odd'}`
+			`todoWidget fontRadialMo ${todo.checked?'checked':''} ${even?'even':'odd'}`
 		}
 	>
 		{/* 체크박스 */}
@@ -83,7 +77,7 @@ export default function TodoWidget({todo, handleTodoList, even, handleSelectedTo
 					width:'16px',
 					height:'16px'
 				}}
-				checked={checked}
+				checked={todo.checked}
 				onClick={checkCallback}
 				onChange={()=>{}}
 			>
@@ -92,13 +86,21 @@ export default function TodoWidget({todo, handleTodoList, even, handleSelectedTo
 		{/* 할일이름 */}
 		<div className={'mid'}>
 		{!editMode
-			?<div className="">
-				{todo.title} (일자){dateValue.toLocaleDateString()} {
-					todo.time
-					?`${timeFormat(todo.time[0])}:${timeFormat(todo.time[1])}`
-					:''
-				}
+			?<><div className="title genericShadow2px">
+				{todo.title} 
 			</div>
+			<div className="dateTime">
+				<div className="date genericShadow2px">
+					{dateValue.toLocaleDateString()}
+				</div>
+				<div className="time genericShadow2px">
+					{
+						todo.time
+						?`${timeFormat(todo.time[0])}:${timeFormat(todo.time[1])}`
+						:''
+					}
+				</div>
+			</div></>
 			:<>
 				<input
 					ref={editInput}

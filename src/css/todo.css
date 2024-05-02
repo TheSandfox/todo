@@ -18,6 +18,8 @@
 	width:100%;
 	height:48px;
 	&>.checkboxWrapper {
+		width:48px;
+		height:48px;
 		display: flex;
 		justify-content: center;
 		align-items: center;
@@ -25,6 +27,18 @@
 	&>.mid {
 		display: flex;
 		align-items: center;
+		width: 480px;
+		justify-content: space-between;
+		&>.title {
+			width: 200px;
+			display: flex;
+			align-items: center;
+		}
+		&>.dateTime {
+			width: 200px;
+			justify-content: space-between;
+			display: flex;
+		}
 	}
 	&>.right {
 		height:100%;
@@ -50,11 +64,14 @@
 	}
 	&.even {
 		background-color: #fc0;
+		&.checked {
+			background-color: #999;
+		}
 	}
 	&.odd {
 		background-color: #cf0;
-	}
-	&.checked {
-		background-color: #999;
+		&.checked {
+			background-color: #aaa;
+		}
 	}
 }

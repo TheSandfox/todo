@@ -23,9 +23,10 @@ export default function AddTodoInput({handleTodoList}) {
 		let newObj = {
 			title:titleValue,
 			date:dateValue,
-			time:timeValue
+			time:timeValue,
+			checked:false//체크가 안된 상태로 넘겨줘야함
 		}
-		console.log(newObj);
+		// console.log(newObj);
 		return newObj
 	},[titleValue,dateValue,timeValue])
 	//인풋핸들러
@@ -107,9 +108,11 @@ export default function AddTodoInput({handleTodoList}) {
 		</div>
 		<div className="bottom">
 			{/* 날짜입력 */}
-			<DatePicker className={'dotbox'} name={'date'} value={dateValue} onChange={handleDateValue.modify}/>
+			<div className='datePickerWrapper dotbox'>
+				<DatePicker className={'fontBitBit'} name={'date'} value={dateValue} onChange={handleDateValue.modify}/>
+			</div>
 			{/* 시간입력 */}
-			<TimePicker className={'dotbox'} name={'time'} value={timeValue} onChange={handleTimeValue.modify} visibleFlag={[true,true,false]}/>
+			<TimePicker className={'dotbox fontBitBit'} name={'time'} value={timeValue} onChange={handleTimeValue.modify} visibleFlag={[true,true,false]}/>
 			{/* 추가버튼 */}
 			<button className={`addButton dotbox ${expand?'expanded':''}`} onClick={buttonClickCallback}>
 				<FaPlus className="plus"></FaPlus>
