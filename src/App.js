@@ -4,7 +4,7 @@ function App() {
 	// return <Todo checkOnly={false}/>
 	return <BrowserRouter basename={process.env.PUBLIC_URL}>
 	<Routes>
-			<Route exact path={'/'} element={<Todo checkOnly={false}/>}/>
+			<Route exact path={''} element={<Todo checkOnly={false}/>}/>
 			<Route path={'/checked/*'} element={<Todo checkOnly={true}/>}/>
 	</Routes>
   </BrowserRouter>
